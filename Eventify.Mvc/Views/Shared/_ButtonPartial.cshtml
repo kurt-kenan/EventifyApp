@@ -1,0 +1,12 @@
+@* Reusable Button Partial *@
+@* Kullanım: @await Html.PartialAsync("_ButtonPartial", new { text = "Kaydet", icon = "bi-check", type = "submit", btnClass = "btn-primary" }) *@
+@{
+    var text = (string)ViewData["text"] ?? "Buton";
+    var icon = (string)ViewData["icon"] ?? null;
+    var type = (string)ViewData["type"] ?? "button";
+    var btnClass = (string)ViewData["btnClass"] ?? "btn-primary";
+}
+<button type="@type" class="btn @btnClass rounded-pill shadow-soft hover-scale d-flex align-items-center justify-content-center gap-2" style="height:3.25rem;">
+    @if (!string.IsNullOrEmpty(icon)) { <i class="bi @icon"></i> }
+    <span>@text</span>
+</button> 

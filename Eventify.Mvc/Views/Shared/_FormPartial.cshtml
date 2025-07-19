@@ -1,0 +1,46 @@
+@* Reusable Form Partial *@
+@* Kullanım: @await Html.PartialAsync("_FormPartial", new { action = "/Admin/AddEvent", method = "post", fields = new[] { new { label = "Etkinlik Adı", name = "EventName", icon = "bi-calendar-event", type = "text", value = "", validation = "" }, new { label = "Tarih", name = "Date", icon = "bi-calendar", type = "date", value = "", validation = "" } }, submitText = "Kaydet", step = 1, totalSteps = 1 }) *@
+@{
+    var action = (string)ViewData["action"] ?? "#";
+    var method = (string)ViewData["method"] ?? "post";
+    var fields = ViewData["fields"] as dynamic[] ?? new dynamic[0];
+    var submitText = (string)ViewData["submitText"] ?? "Gönder";
+    var step = (int?)ViewData["step"] ?? 1;
+    var totalSteps = (int?)ViewData["totalSteps"] ?? 1;
+}
+<form action="@action" method="@method" class="needs-validation animate-fade-in" novalidate>
+    @if (totalSteps > 1) {
+        <div class="mb-4">
+            <div class="progress" style="height: 0.5rem;">
+                <div class="progress-bar bg-gradient-primary" role="progressbar" style="width: @(100*step/totalSteps)%"></div>
+            </div>
+            <div class="text-end small mt-1">Adım @step/@totalSteps</div>
+        </div>
+    }
+    @foreach (var field in fields) {
+        <div class="form-floating mb-3 position-relative">
+            <input type="@field.type" class="form-control ps-5" id="@field.name" name="@field.name" value="@field.value" placeholder=" " required style="height:3rem;">
+            <label for="@field.name">@field.label</label>
+            <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-primary"><i class="bi @field.icon"></i></span>
+            @if (!string.IsNullOrEmpty(field.validation)) {
+                <div class="form-validation mt-1"><i class="bi bi-exclamation-circle"></i> @field.validation</div>
+            }
+        </div>
+    }
+    <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-soft hover-scale" style="height:3.25rem;">
+        <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+        @submitText
+    </button>
+</form>
+<script>
+// Mikro etkileşim: Form submit loading animasyonu
+const form = document.currentScript?.previousElementSibling;
+if(form){
+  form.addEventListener('submit', function(e){
+    const btn = form.querySelector('button[type="submit"]');
+    const spinner = btn.querySelector('.spinner-border');
+    spinner.classList.remove('d-none');
+    btn.setAttribute('disabled', 'disabled');
+  });
+}
+</script> 

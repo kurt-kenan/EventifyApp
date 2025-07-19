@@ -1,0 +1,22 @@
+@* Reusable Filter Bar Partial *@
+@* Kullanım: @await Html.PartialAsync("_FilterBarPartial", new { searchPlaceholder = "Ara...", filters = new[] { new { label = "Durum", name = "status", options = new[] { "Tümü", "Aktif", "Pasif" } } } }) *@
+@{
+    var searchPlaceholder = (string)ViewData["searchPlaceholder"] ?? "Ara...";
+    var filters = ViewData["filters"] as dynamic[] ?? new dynamic[0];
+}
+<form class="filter-bar mb-4 animate-fade-in" method="get">
+    <div class="input-group" style="max-width: 320px;">
+        <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+        <input type="search" class="form-control" name="search" placeholder="@searchPlaceholder" />
+    </div>
+    @foreach (var filter in filters) {
+        <div class="ms-2">
+            <select class="form-select" name="@filter.name">
+                @foreach (var opt in filter.options) {
+                    <option value="@opt">@opt</option>
+                }
+            </select>
+        </div>
+    }
+    <button type="submit" class="btn btn-primary rounded-pill ms-2"><i class="bi bi-funnel"></i> Filtrele</button>
+</form> 

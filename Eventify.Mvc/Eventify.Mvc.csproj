@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Eventify.Core\Eventify.Core.csproj" />
+    <ProjectReference Include="..\Eventify.DataAccess\Eventify.DataAccess.csproj" />
+    <ProjectReference Include="..\Eventify.DTOs\Eventify.DTOs.csproj" />
+    <ProjectReference Include="..\Eventify.Helpers\Eventify.Helpers.csproj" />
+  </ItemGroup>
+
+</Project>

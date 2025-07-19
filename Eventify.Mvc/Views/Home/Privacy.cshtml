@@ -1,0 +1,8 @@
+﻿@{
+    ViewData["Title"] = "Gizlilik Politikası";
+}
+@await Html.PartialAsync("_CardPartial", new {
+    title = "Gizlilik Politikası",
+    icon = "bi-shield-lock",
+    body = @"<p class='mb-0'>Kullanıcı bilgileriniz gizli tutulur ve üçüncü şahıslarla paylaşılmaz. Detaylı bilgi için lütfen bizimle iletişime geçin.</p>"
+})

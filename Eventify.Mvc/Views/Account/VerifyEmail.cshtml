@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "E-posta Doğrulama";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (ViewBag.Success == true)
+{
+    <div class="alert alert-success">@ViewBag.Message</div>
+    <a href="/Auth/Login">Giriş Yap</a>
+}
+else
+{
+    <div class="alert alert-danger">@ViewBag.Message</div>
+    <a href="/Auth/Register">Kayıt Ol</a>
+} 

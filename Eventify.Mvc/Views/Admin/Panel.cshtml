@@ -1,0 +1,16 @@
+@model Eventify.Mvc.Models.AdminPanelViewModel
+@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+
+<h2>Admin Paneli</h2>
+<div class="row mt-5">
+    <div class="col-md-4 text-center">
+        <a asp-action="Panel" class="btn btn-outline-dark w-75 mb-3" style="font-size:1.2rem;">Panel Ana Sayfa</a>
+        <a asp-action="Users" class="btn btn-lg btn-primary w-75" style="height:100px; font-size:2rem;">Kullanıcı Yönetimi</a>
+    </div>
+    <div class="col-md-4 text-center">
+        <a asp-action="Events" class="btn btn-lg btn-success w-75" style="height:100px; font-size:2rem;">Etkinlik Yönetimi</a>
+    </div>
+</div> 

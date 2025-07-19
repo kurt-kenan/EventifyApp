@@ -1,0 +1,557 @@
+@{
+    ViewData["Title"] = "Aboneliğim";
+    var hasSubscription = ViewBag.HasSubscription as bool? ?? false;
+    var subscription = ViewBag.Subscription as Eventify.DTOs.Subscription.UserSubscriptionDto;
+}
+
+<div class="subscription-details-container">
+    <div class="subscription-header">
+        <h1 class="subscription-title">
+            <i class="bi bi-person-badge"></i> Abonelik Bilgilerim
+        </h1>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill"></i> @TempData["Info"]
+        </div>
+    }
+
+    @if (hasSubscription && subscription != null)
+    {
+        <div class="subscription-content">
+            <div class="subscription-card">
+                <div class="subscription-status @(subscription.IsActive ? "status-active" : "status-expired")">
+                    <i class="bi @(subscription.IsActive ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                    <span>@(subscription.IsActive ? "Aktif" : "Süresi Dolmuş")</span>
+                </div>
+
+                <div class="subscription-info">
+                    <div class="info-section">
+                        <h3>Plan Bilgileri</h3>
+                        <div class="info-item">
+                            <span class="label">Plan Adı:</span>
+                            <span class="value">@subscription.PlanName</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Plan Açıklaması:</span>
+                            <span class="value">@subscription.Plan.Description</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Başlangıç Tarihi:</span>
+                            <span class="value">@subscription.StartDate.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Bitiş Tarihi:</span>
+                            <span class="value">@subscription.EndDate.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Kalan Gün:</span>
+                            <span class="value @(subscription.DaysRemaining <= 7 ? "text-warning" : "")">@subscription.DaysRemaining gün</span>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Plan Limitleri</h3>
+                        <div class="info-item">
+                            <span class="label">Etkinlik Oluşturma:</span>
+                            <span class="value @(subscription.Plan.CanCreateEvents ? "text-success" : "text-danger")">
+                                <i class="bi @(subscription.Plan.CanCreateEvents ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                                @(subscription.Plan.CanCreateEvents ? "Aktif" : "Pasif")
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Aylık Maksimum Etkinlik:</span>
+                            <span class="value">@subscription.Plan.MaxEventsPerMonth etkinlik</span>
+                        </div>
+                        @if (subscription.Plan.CanCreateEvents)
+                        {
+                            var remainingEvents = ViewBag.UsageStats?.GetProperty("remainingEvents").GetInt32() ?? 0;
+                            var eventsCreatedThisMonth = ViewBag.UsageStats?.GetProperty("eventsCreatedThisMonth").GetInt32() ?? 0;
+                            var remainingClass = remainingEvents <= 2 ? "text-warning" : "text-success";
+                            var progressPercent = subscription.Plan.MaxEventsPerMonth > 0 ? (eventsCreatedThisMonth * 100 / subscription.Plan.MaxEventsPerMonth) : 0;
+                            
+                            <div class="info-item">
+                                <span class="label">Kalan Etkinlik Hakkı:</span>
+                                <span class="value @remainingClass">
+                                    <strong>@remainingEvents</strong> / @subscription.Plan.MaxEventsPerMonth
+                                </span>
+                            </div>
+                            <div class="progress-item">
+                                <div class="progress-label">Bu Ay Kullanım</div>
+                                <div class="progress">
+                                    <div class="progress-bar @(progressPercent >= 80 ? "bg-warning" : "bg-success")" 
+                                         role="progressbar" 
+                                         style="width: @(Math.Min(progressPercent, 100))%" 
+                                         aria-valuenow="@progressPercent" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        @eventsCreatedThisMonth / @subscription.Plan.MaxEventsPerMonth
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="info-item">
+                            <span class="label">Etkinlik Başına Maksimum Katılımcı:</span>
+                            <span class="value">@subscription.Plan.MaxParticipantsPerEvent kişi</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Günlük Maksimum Katılım:</span>
+                            <span class="value">@subscription.Plan.MaxDailyJoins etkinlik</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Öncelikli Destek:</span>
+                            <span class="value @(subscription.Plan.HasPrioritySupport ? "text-success" : "text-muted")">
+                                <i class="bi @(subscription.Plan.HasPrioritySupport ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                                @(subscription.Plan.HasPrioritySupport ? "Var" : "Yok")
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Gelişmiş Analitik:</span>
+                            <span class="value @(subscription.Plan.HasAdvancedAnalytics ? "text-success" : "text-muted")">
+                                <i class="bi @(subscription.Plan.HasAdvancedAnalytics ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+                                @(subscription.Plan.HasAdvancedAnalytics ? "Var" : "Yok")
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (subscription.IsActive)
+                    {
+                        <div class="subscription-actions">
+                            <a asp-controller="Subscription" asp-action="Plans" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-repeat"></i> Plan Değiştir
+                            </a>
+                            <form asp-action="Cancel" method="post" style="display: inline;" onsubmit="return confirm('Aboneliğinizi iptal etmek istediğinizden emin misiniz?')">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle"></i> Aboneliği İptal Et
+                                </button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="subscription-actions">
+                            <a asp-controller="Subscription" asp-action="Plans" class="btn btn-primary">
+                                <i class="bi bi-star"></i> Yeni Abonelik Al
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (subscription.IsActive)
+            {
+                <div class="usage-stats">
+                    <h3>Kullanım İstatistikleri</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value">@(ViewBag.UsageStats?.GetProperty("eventsCreatedThisMonth").GetInt32() ?? 0)</div>
+                                <div class="stat-label">Bu Ay Oluşturulan Etkinlik</div>
+                                <div class="stat-limit">
+                                    @{
+                                        var remainingEvents = ViewBag.UsageStats?.GetProperty("remainingEvents").GetInt32() ?? 0;
+                                        var maxEvents = ViewBag.UsageStats?.GetProperty("maxEventsPerMonth").GetInt32() ?? 0;
+                                        var remainingClass = remainingEvents <= 2 ? "text-warning" : "text-success";
+                                    }
+                                    <span class="@remainingClass"><strong>@remainingEvents kalan</strong></span> / 
+                                    @maxEvents limit
+                                </div>
+                                @if (remainingEvents <= 2)
+                                {
+                                    <div class="stat-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        Etkinlik hakkınız azalıyor!
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value">@(ViewBag.UsageStats?.GetProperty("totalParticipants").GetInt32() ?? 0)</div>
+                                <div class="stat-label">Toplam Katılımcı</div>
+                                <div class="stat-limit">Maks: @(ViewBag.UsageStats?.GetProperty("maxParticipantsPerEvent").GetInt32() ?? 0) kişi</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value">@(ViewBag.UsageStats?.GetProperty("favoriteEvents").GetInt32() ?? 0)</div>
+                                <div class="stat-label">Favori Etkinlik</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-value">@(ViewBag.UsageStats?.GetProperty("eventsJoinedThisMonth").GetInt32() ?? 0)</div>
+                                <div class="stat-label">Bu Ay Katıldığınız</div>
+                                <div class="stat-limit">
+                                    @{
+                                        var remainingDailyJoins = ViewBag.UsageStats?.GetProperty("remainingDailyJoins").GetInt32() ?? 0;
+                                        var maxDailyJoins = ViewBag.UsageStats?.GetProperty("maxDailyJoins").GetInt32() ?? 0;
+                                        var remainingDailyClass = remainingDailyJoins <= 1 ? "text-warning" : "text-success";
+                                    }
+                                    <span class="@remainingDailyClass">@remainingDailyJoins kalan</span> / 
+                                    @maxDailyJoins günlük
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-subscription">
+            <div class="no-subscription-card">
+                <div class="no-subscription-icon">
+                    <i class="bi bi-star"></i>
+                </div>
+                <h3>Henüz Aboneliğiniz Yok</h3>
+                <p>Etkinliklerinizi daha etkili bir şekilde yönetmek için bir abonelik planı seçin.</p>
+                <div class="no-subscription-actions">
+                    <a asp-controller="Subscription" asp-action="Plans" class="btn btn-primary btn-lg">
+                        <i class="bi bi-star"></i> Abonelik Planlarını İncele
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .subscription-details-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+
+    .subscription-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .subscription-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .subscription-title i {
+        margin-right: 0.5rem;
+    }
+
+    .subscription-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .subscription-card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        position: relative;
+    }
+
+    .subscription-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: var(--success);
+        color: white;
+    }
+
+    .status-expired {
+        background: var(--danger);
+        color: white;
+    }
+
+    .subscription-info {
+        margin-top: 1rem;
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+    }
+
+    .info-section h3 {
+        color: var(--dark);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--light);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        font-weight: 500;
+        color: var(--medium);
+    }
+
+    .value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .progress-item {
+        margin: 1rem 0;
+    }
+
+    .progress-label {
+        font-size: 0.9rem;
+        color: var(--medium);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .progress {
+        height: 1.5rem;
+        background-color: var(--light);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+        transition: width 0.3s ease;
+    }
+
+    .bg-success {
+        background-color: var(--success) !important;
+    }
+
+    .bg-warning {
+        background-color: var(--warning) !important;
+    }
+
+    .subscription-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .usage-stats {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+    }
+
+    .usage-stats h3 {
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: var(--light);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--medium);
+    }
+
+    .stat-limit {
+        font-size: 0.8rem;
+        color: var(--primary);
+        font-weight: 500;
+        margin-top: 0.2rem;
+    }
+
+    .stat-warning {
+        font-size: 0.75rem;
+        color: var(--warning);
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+
+    .text-success {
+        color: var(--success) !important;
+    }
+
+    .text-warning {
+        color: var(--warning) !important;
+    }
+
+    .text-danger {
+        color: var(--danger) !important;
+    }
+
+    .no-subscription {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+    }
+
+    .no-subscription-card {
+        text-align: center;
+        background: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 3rem;
+        max-width: 500px;
+    }
+
+    .no-subscription-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: var(--primary);
+        font-size: 2rem;
+    }
+
+    .no-subscription-card h3 {
+        color: var(--dark);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .no-subscription-card p {
+        color: var(--medium);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    .no-subscription-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    @@media (max-width: 768px) {
+        .subscription-title {
+            font-size: 2rem;
+        }
+
+        .subscription-actions {
+            flex-direction: column;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .subscription-status {
+            position: static;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+    }
+</style> 

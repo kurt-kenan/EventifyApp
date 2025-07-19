@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.Core", "Eventify.Core\Eventify.Core.csproj", "{0A5CABD0-C65E-41CC-91CF-1CB64C9E080C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.DataAccess", "Eventify.DataAccess\Eventify.DataAccess.csproj", "{16751B7C-4962-4CD1-A23B-A40AB4B246C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.Business", "Eventify.Business\Eventify.Business.csproj", "{D4694E0D-72FB-4F4D-8665-B423FB1B4B24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.DTOs", "Eventify.DTOs\Eventify.DTOs.csproj", "{66950174-DB52-4A36-BB60-9D68D0C33513}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.Helpers", "Eventify.Helpers\Eventify.Helpers.csproj", "{C379ACB1-12F1-4E98-AB83-7518956F6F66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.WebAPI", "Eventify.WebAPI\Eventify.WebAPI.csproj", "{921DA221-D0D5-4923-94AB-AFBAD53FBB9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventify.Mvc", "Eventify.Mvc\Eventify.Mvc.csproj", "{7C7CF997-5A3A-65CC-1F77-EB7CCC6F214A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A5CABD0-C65E-41CC-91CF-1CB64C9E080C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A5CABD0-C65E-41CC-91CF-1CB64C9E080C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A5CABD0-C65E-41CC-91CF-1CB64C9E080C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A5CABD0-C65E-41CC-91CF-1CB64C9E080C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16751B7C-4962-4CD1-A23B-A40AB4B246C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16751B7C-4962-4CD1-A23B-A40AB4B246C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16751B7C-4962-4CD1-A23B-A40AB4B246C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16751B7C-4962-4CD1-A23B-A40AB4B246C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4694E0D-72FB-4F4D-8665-B423FB1B4B24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4694E0D-72FB-4F4D-8665-B423FB1B4B24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4694E0D-72FB-4F4D-8665-B423FB1B4B24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4694E0D-72FB-4F4D-8665-B423FB1B4B24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66950174-DB52-4A36-BB60-9D68D0C33513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66950174-DB52-4A36-BB60-9D68D0C33513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66950174-DB52-4A36-BB60-9D68D0C33513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66950174-DB52-4A36-BB60-9D68D0C33513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C379ACB1-12F1-4E98-AB83-7518956F6F66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C379ACB1-12F1-4E98-AB83-7518956F6F66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C379ACB1-12F1-4E98-AB83-7518956F6F66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C379ACB1-12F1-4E98-AB83-7518956F6F66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{921DA221-D0D5-4923-94AB-AFBAD53FBB9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{921DA221-D0D5-4923-94AB-AFBAD53FBB9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{921DA221-D0D5-4923-94AB-AFBAD53FBB9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{921DA221-D0D5-4923-94AB-AFBAD53FBB9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C7CF997-5A3A-65CC-1F77-EB7CCC6F214A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C7CF997-5A3A-65CC-1F77-EB7CCC6F214A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C7CF997-5A3A-65CC-1F77-EB7CCC6F214A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C7CF997-5A3A-65CC-1F77-EB7CCC6F214A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F9ABE05-7F18-4AC8-8632-E1E3B7230232}
+	EndGlobalSection
+EndGlobal

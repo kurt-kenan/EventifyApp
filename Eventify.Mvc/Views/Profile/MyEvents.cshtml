@@ -1,0 +1,466 @@
+@model List<Eventify.Mvc.Models.EventSummaryViewModel>
+
+@{
+    ViewData["Title"] = "Etkinliklerim";
+}
+
+<div class="my-events-container">
+    <div class="my-events-header">
+        <h1 class="my-events-title">
+            <i class="bi bi-calendar-check"></i> Oluşturduğum Etkinlikler
+        </h1>
+        <a asp-controller="Event" asp-action="Create" class="btn btn-create-event">
+            <i class="bi bi-plus-circle"></i> Yeni Etkinlik Oluştur
+        </a>
+    </div>
+
+@if (TempData["Error"] != null)
+{
+        <div class="alert alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+        </div>
+}
+
+@if (Model != null && Model.Count > 0)
+{
+        <div class="events-grid">
+        @foreach (var ev in Model)
+        {
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="@(string.IsNullOrEmpty(ev.PhotoPath) ? "https://source.unsplash.com/random/600x400/?event," + (ev.Category ?? "activity") : ev.PhotoPath)" 
+                             alt="@ev.Title" class="event-photo">
+                        <div class="event-date">
+                            <span class="day">@ev.StartDate.ToString("dd")</span>
+                            <span class="month">@ev.StartDate.ToString("MMM")</span>
+                        </div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <h3 class="event-title">@ev.Title</h3>
+                            <div class="event-meta">
+                                <span class="location">
+                                    <i class="bi bi-geo-alt"></i> @ev.Location
+                                </span>
+                                <span class="participants">
+                                    <i class="bi bi-people"></i> @ev.ParticipantCount Katılımcı
+                                </span>
+                            </div>
+                        </div>
+                        <div class="event-dates">
+                            <div class="date-item">
+                                <i class="bi bi-clock"></i>
+                                <span>@ev.StartDate.ToString("g")</span>
+                            </div>
+                            <div class="date-item">
+                                <i class="bi bi-clock"></i>
+                                <span>@ev.EndDate.ToString("g")</span>
+                            </div>
+                        </div>
+                        <div class="event-actions">
+                            <a asp-controller="Profile" asp-action="EditEvent" asp-route-id="@ev.Id" 
+                               class="btn btn-edit">
+                                <i class="bi bi-pencil"></i> Düzenle
+                            </a>
+                            <button type="button" class="btn btn-details" 
+                                    onclick="showEventDetails(@ev.Id, '@ev.Title', '@ev.Description', '@ev.Location', '@ev.StartDate.ToString("g")', '@ev.EndDate.ToString("g")', @ev.ParticipantCount)">
+                                <i class="bi bi-eye"></i> Detaylar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+}
+else
+{
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-calendar-x"></i>
+            </div>
+            <h3>Henüz etkinlik oluşturmadınız</h3>
+            <p>Yeni bir etkinlik oluşturarak başlayabilirsiniz.</p>
+            <a asp-controller="Event" asp-action="Create" class="btn btn-create">
+                <i class="bi bi-plus-circle"></i> Etkinlik Oluştur
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --accent: #f72585;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #ef233c;
+        --dark: #2b2d42;
+        --medium: #8d99ae;
+        --light: #edf2f4;
+        --white: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .my-events-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .my-events-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .my-events-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .btn-create-event {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-create-event:hover {
+        background-color: var(--secondary);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-error {
+        background-color: rgba(239, 35, 60, 0.1);
+        color: var(--danger);
+        border-left: 4px solid var(--danger);
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+
+    .event-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .event-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .event-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .event-card:hover .event-photo {
+        transform: scale(1.05);
+    }
+
+    .event-date {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: var(--white);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .event-date .day {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: block;
+        line-height: 1;
+    }
+
+    .event-date .month {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .event-content {
+        padding: 1.5rem;
+    }
+
+    .event-header {
+        margin-bottom: 1rem;
+    }
+
+    .event-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .event-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: var(--medium);
+    }
+
+    .event-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .event-dates {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .date-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--dark);
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .btn-edit, .btn-details {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        background-color: rgba(248, 150, 30, 0.1);
+        color: var(--warning);
+        border: 1px solid rgba(248, 150, 30, 0.3);
+    }
+
+    .btn-edit:hover {
+        background-color: rgba(248, 150, 30, 0.2);
+        text-decoration: none;
+    }
+
+    .btn-details {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-details:hover {
+        background-color: rgba(67, 97, 238, 0.2);
+        text-decoration: none;
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        margin-top: 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .empty-state p {
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        max-width: 400px;
+    }
+
+    .btn-create {
+        padding: 0.75rem 1.5rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .btn-create:hover {
+        background-color: var(--secondary);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    @@media (max-width: 768px) {
+        .my-events-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Modal Styles */
+    .event-details-content h4 {
+        color: var(--dark);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .event-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        background-color: var(--light);
+        border-radius: var(--border-radius);
+        color: var(--dark);
+    }
+
+    .detail-item i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+</style> 
+
+<!-- Event Details Modal -->
+<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventDetailsModalLabel">Etkinlik Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="event-details-content">
+                    <h4 id="modalEventTitle"></h4>
+                    <p id="modalEventDescription" class="text-muted"></p>
+                    
+                    <div class="event-details-grid">
+                        <div class="detail-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span id="modalEventLocation"></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-calendar"></i>
+                            <span id="modalEventStartDate"></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-calendar-check"></i>
+                            <span id="modalEventEndDate"></span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="bi bi-people"></i>
+                            <span id="modalEventParticipants"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <a id="modalEditButton" href="#" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Düzenle
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showEventDetails(id, title, description, location, startDate, endDate, participants) {
+        // Set modal content
+        document.getElementById('modalEventTitle').textContent = title;
+        document.getElementById('modalEventDescription').textContent = description;
+        document.getElementById('modalEventLocation').textContent = location;
+        document.getElementById('modalEventStartDate').textContent = startDate;
+        document.getElementById('modalEventEndDate').textContent = endDate;
+        document.getElementById('modalEventParticipants').textContent = participants + ' Katılımcı';
+        
+        // Set edit button href
+        document.getElementById('modalEditButton').href = '/Profile/EditEvent/' + id;
+        
+        // Show modal
+        var modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
+        modal.show();
+    }
+</script>

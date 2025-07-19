@@ -1,0 +1,22 @@
+@* Reusable Card Partial *@
+@* Kullanım: @await Html.PartialAsync("_CardPartial", new { title = "Başlık", icon = "bi-gear", body = "<p>İçerik</p>", footer = "<span>Footer</span>" }) *@
+@{
+    var title = (string)ViewData["title"] ?? "Başlık";
+    var icon = (string)ViewData["icon"] ?? "bi-card-text";
+    var body = (string)ViewData["body"] ?? "";
+    var footer = (string)ViewData["footer"] ?? null;
+}
+<div class="card shadow-lg border-0 animate-fade-in">
+    <div class="card-header bg-gradient-primary-to-secondary text-white d-flex align-items-center rounded-top" style="min-height:3.5rem;">
+        <i class="bi @icon me-2 fs-4"></i>
+        <h3 class="card-title mb-0 fs-5">@title</h3>
+    </div>
+    <div class="card-body p-4 rounded-base">
+        @Html.Raw(body)
+    </div>
+    @if (!string.IsNullOrEmpty(footer)) {
+        <div class="card-footer bg-light border-top rounded-bottom">
+            @Html.Raw(footer)
+        </div>
+    }
+</div> 

@@ -1,0 +1,16 @@
+@* Reusable Empty State Partial *@
+@* Kullanım: @await Html.PartialAsync("_EmptyStatePartial", new { icon = "bi-emoji-frown", title = "Kayıt Bulunamadı", description = "Henüz hiç veri yok.", actionHtml = "<a href='/Admin/AddEvent' class='btn btn-primary rounded-pill mt-3'><i class='bi bi-plus'></i> Yeni Ekle</a>" }) *@
+@{
+    var icon = (string)ViewData["icon"] ?? "bi-emoji-frown";
+    var title = (string)ViewData["title"] ?? "Kayıt Bulunamadı";
+    var description = (string)ViewData["description"] ?? "Henüz hiç veri yok.";
+    var actionHtml = (string)ViewData["actionHtml"] ?? null;
+}
+<div class="empty-state animate-fade-in">
+    <div class="illustration"><i class="bi @icon"></i></div>
+    <h4 class="fw-semibold mb-2">@title</h4>
+    <div class="mb-2">@description</div>
+    @if (!string.IsNullOrEmpty(actionHtml)) {
+        @Html.Raw(actionHtml)
+    }
+</div> 

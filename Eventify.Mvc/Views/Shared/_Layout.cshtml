@@ -1,0 +1,562 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var token = Context.Session.GetString("token");
+    var username = Context.Session.GetString("Username");
+    var isAdminSession = Context.Session.GetString("isAdmin");
+    var isAdmin = isAdminSession == "true";
+    
+    // Profil fotoğrafı ve jeton bilgisi için kullanıcı bilgilerini al
+    string photoPath = null;
+    int tokens = 0;
+    if (!string.IsNullOrEmpty(token))
+    {
+        try
+        {
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("https://localhost:44315/");
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/user/me");
+            request.Headers.Add("Authorization", $"Bearer {token}");
+            var response = await httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                photoPath = doc.RootElement.TryGetProperty("photoPath", out var pp) ? pp.GetString() : null;
+                tokens = doc.RootElement.TryGetProperty("tokens", out var t) ? t.GetInt32() : 0;
+            }
+        }
+        catch
+        {
+            // Hata durumunda varsayılan avatar kullan
+        }
+    }
+    
+
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Eventify</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    
+    <!-- Custom CSS -->
+    <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --dark: #2b2d42;
+            --medium: #8d99ae;
+            --light: #edf2f4;
+            --white: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: var(--box-shadow);
+            padding: 0.8rem 0;
+        }
+
+        .navbar.admin-navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+        }
+
+        .navbar.admin-navbar .navbar-brand {
+            color: var(--white);
+        }
+
+        .navbar.admin-navbar .navbar-brand:hover {
+            color: var(--light);
+        }
+
+        .navbar.admin-navbar .nav-link {
+            color: var(--white);
+        }
+
+        .navbar.admin-navbar .nav-link:hover {
+            color: var(--light);
+        }
+
+        .navbar.admin-navbar .dropdown-menu {
+            background-color: var(--white);
+            border: 1px solid var(--light);
+        }
+
+        .navbar.admin-navbar .dropdown-item {
+            color: var(--dark);
+        }
+
+        .navbar.admin-navbar .dropdown-item:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+
+        .admin-badge {
+            background-color: var(--accent);
+            color: var(--white);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand:hover {
+            color: var(--secondary);
+        }
+
+        .navbar-brand i {
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--light);
+            color: var(--primary);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light);
+        }
+
+        .token-display {
+            color: #ffd700 !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .token-display:hover {
+            color: #ffed4e !important;
+            transform: translateY(-1px);
+        }
+
+        .token-display i {
+            color: #ffd700;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            flex: 1;
+            padding-top: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-link {
+            color: var(--light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--primary-light);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-link {
+            color: var(--light);
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            color: var(--primary-light);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--medium);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 992px) {
+            .navbar-collapse {
+                padding-top: 1rem;
+            }
+
+            .nav-item {
+                margin-bottom: 0.5rem;
+            }
+
+            .btn-mobile {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light @(isAdmin ? "admin-navbar" : "")">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-calendar-heart"></i> Eventify
+                    @if (isAdmin)
+                    {
+                        <span class="admin-badge">ADMIN</span>
+                    }
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                        @if (!string.IsNullOrEmpty(token) && isAdmin)
+                        {
+                            <!-- Admin Navbar -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <img src="@(string.IsNullOrEmpty(photoPath) ? "https://ui-avatars.com/api/?name=" + username + "&background=random" : photoPath)" class="user-avatar me-1">
+                                    <i class="bi bi-shield-lock"></i> Admin Paneli
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Panel"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users"><i class="bi bi-people"></i> Kullanıcılar</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="Events"><i class="bi bi-calendar-event"></i> Etkinlikler</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="AddEvent"><i class="bi bi-plus-circle"></i> Etkinlik Ekle</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="bi bi-person"></i> Profilim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="MyEvents"><i class="bi bi-calendar-check"></i> Etkinliklerim</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Admin" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li class="nav-item position-relative">
+                                <a class="nav-link" href="#" onclick="showNotifications()">
+                                    <i class="bi bi-bell"></i>
+                                    <span class="notification-badge">3</span>
+                                </a>
+                            </li>
+                        }
+                        else if (!string.IsNullOrEmpty(token))
+                        {
+                            <!-- Normal User Navbar -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Event" asp-action="Create">
+                                    <i class="bi bi-plus-circle"></i> Etkinlik Oluştur
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Subscription" asp-action="Plans">
+                                    <i class="bi bi-star"></i> Abone Ol
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link token-display" asp-controller="Token" asp-action="Packages">
+                                    <i class="bi bi-coin"></i> @tokens
+                                </a>
+                            </li>
+                            
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <img src="@(string.IsNullOrEmpty(photoPath) ? "https://ui-avatars.com/api/?name=" + username + "&background=random" : photoPath)" class="user-avatar me-1">
+                                    @username
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index"><i class="bi bi-person"></i> Profilim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="MyEvents"><i class="bi bi-calendar-check"></i> Etkinliklerim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="JoinedEvents"><i class="bi bi-ticket-perforated"></i> Katıldıklarım</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Favorites"><i class="bi bi-heart"></i> Favorilerim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Hobbies"><i class="bi bi-palette"></i> Hobilerim</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Subscription" asp-action="MySubscription"><i class="bi bi-person-badge"></i> Aboneliğim</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item">
+                                                <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li class="nav-item position-relative">
+                                <a class="nav-link" href="#" onclick="showNotifications()">
+                                    <i class="bi bi-bell"></i>
+                                    <span class="notification-badge">3</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Guest Navbar -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ms-lg-2 btn-mobile" asp-controller="Auth" asp-action="Register">
+                                    <i class="bi bi-person-plus"></i> Kayıt Ol
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Hakkımızda</a>
+                        <a href="#" class="footer-link">Kullanım Koşulları</a>
+                        <a href="#" class="footer-link">Gizlilik Politikası</a>
+                        <a href="#" class="footer-link">İletişim</a>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                    
+                    <div class="copyright">
+                        &copy; @DateTime.Now.Year Eventify - Tüm hakları saklıdır.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        $(function() {
+            // Token info loading
+            if ($("#token-info-placeholder").length) {
+                $("#token-info-placeholder").load("/Profile/TokenInfo");
+            }
+            
+            // Toast notifications
+            @if (TempData["ToastError"] != null)
+            {
+                <text>
+                showToast('@TempData["ToastError"]', 'error');
+                </text>
+            }
+            @if (TempData["ToastSuccess"] != null)
+            {
+                <text>
+                showToast('@TempData["ToastSuccess"]', 'success');
+                </text>
+            }
+            @if (TempData["ToastInfo"] != null)
+            {
+                <text>
+                showToast('@TempData["ToastInfo"]', 'info');
+                </text>
+            }
+        });
+
+        function showNotifications() {
+            // Notification functionality can be implemented here
+            alert('Bildirimler yakında eklenecek!');
+        }
+
+        function showToast(message, type = 'info') {
+            // Toast container oluştur
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+
+            // Toast element oluştur
+            const toast = document.createElement('div');
+            toast.className = `toast show`;
+            toast.style.cssText = `
+                background: ${type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#17a2b8'};
+                color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideInRight 0.3s ease-out;
+            `;
+
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">&times;</button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // 5 saniye sonra otomatik kaldır
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

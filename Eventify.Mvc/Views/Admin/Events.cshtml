@@ -1,0 +1,66 @@
+@model List<Eventify.Mvc.Models.AdminEventViewModel>
+@{
+    ViewData["Title"] = "Etkinlik Yönetimi";
+}
+<h2>Etkinlik Yönetimi</h2>
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Başlık, lokasyon ile ara..." value="@ViewBag.Search" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="minParticipants" class="form-control" placeholder="Min Katılımcı" value="@ViewBag.MinParticipants" min="0" />
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="maxParticipants" class="form-control" placeholder="Max Katılımcı" value="@ViewBag.MaxParticipants" min="0" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="creator" class="form-control" placeholder="Oluşturan kullanıcı ile ara..." value="@ViewBag.Creator" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-secondary w-100">Filtrele</button>
+        </div>
+    </div>
+</form>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+<a asp-action="AddEvent" class="btn btn-primary mb-3">Etkinlik Ekle</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Başlık</th>
+            <th>Lokasyon</th>
+            <th>Başlangıç</th>
+            <th>Bitiş</th>
+            <th>Katılımcı Sınırı</th>
+            <th>Oluşturan Kullanıcı</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var ev in Model)
+    {
+        <tr>
+            <td>@ev.Title</td>
+            <td>@ev.Location</td>
+            <td>@ev.StartDate.ToString("g")</td>
+            <td>@ev.EndDate.ToString("g")</td>
+            <td>@ev.MaxParticipants</td>
+            <td>@ev.CreatorFullName (@ev.CreatorUsername)</td>
+            <td>
+                <form asp-action="DeleteEvent" method="post" style="display:inline">
+                    <input type="hidden" name="id" value="@ev.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Etkinlik silinsin mi?')">Sil</button>
+                </form>
+                <a asp-action="EditEvent" asp-route-id="@ev.Id" class="btn btn-warning btn-sm ms-2">Düzenle</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table> 

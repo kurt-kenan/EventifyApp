@@ -1,0 +1,408 @@
+@model Eventify.Mvc.Controllers.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">
+            <i class="bi bi-person-circle"></i> Profil Bilgilerim
+        </h1>
+        <div class="profile-actions">
+            <a asp-action="ChangePassword" class="btn btn-change-password">
+                <i class="bi bi-shield-lock"></i> Şifre Değiştir
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+        </div>
+    }
+
+    <div class="profile-card">
+        <div class="profile-photo-section">
+            <div class="profile-photo-container">
+                @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                {
+                    <img src="@Model.PhotoPath" alt="Profil Fotoğrafı" class="profile-photo">
+                }
+                else
+                {
+                    <div class="profile-photo-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                }
+            </div>
+            <form asp-action="UploadPhoto" method="post" enctype="multipart/form-data" style="display: inline;">
+                <div class="input-group">
+                    <input type="file" name="file" class="form-control" accept="image/*" style="display: none;" id="photoInput" />
+                    <button type="button" class="btn btn-upload-photo" onclick="document.getElementById('photoInput').click();">
+                        <i class="bi bi-camera-fill"></i> Fotoğraf Yükle
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form asp-action="Edit" method="post" class="profile-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-person-vcard"></i> Ad Soyad
+                    </label>
+                    <input asp-for="FullName" class="form-input" />
+                    <span asp-validation-for="FullName" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-person"></i> Kullanıcı Adı
+                    </label>
+                    <input asp-for="Username" class="form-input" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-envelope"></i> Email
+                    </label>
+                    <input asp-for="Email" class="form-input" />
+                    <span asp-validation-for="Email" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-calendar"></i> Doğum Tarihi
+                    </label>
+                    <input asp-for="BirthDate" type="date" class="form-input" />
+                    <span asp-validation-for="BirthDate" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-shield"></i> Rol
+                    </label>
+                    <div class="form-input role-display">
+                        @Model.Role
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-coin"></i> Jeton
+                    </label>
+                    <div class="form-input tokens-display">
+                        @Model.Tokens <span class="token-icon">🪙</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="bi bi-clock-history"></i> Kayıt Tarihi
+                    </label>
+                    <div class="form-input">
+                        @Model.CreatedAt.ToString("dd MMMM yyyy")
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-save">
+                <i class="bi bi-save"></i> Profili Güncelle
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('photoInput').addEventListener('change', function() {
+        if (this.files.length > 0) {
+            this.closest('form').submit();
+        }
+    });
+</script>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --accent: #f72585;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #ef233c;
+        --dark: #2b2d42;
+        --medium: #8d99ae;
+        --light: #edf2f4;
+        --white: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .profile-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .profile-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-error {
+        background-color: rgba(239, 35, 60, 0.1);
+        color: var(--danger);
+        border-left: 4px solid var(--danger);
+    }
+
+    .alert-success {
+        background-color: rgba(76, 201, 240, 0.1);
+        color: var(--success);
+        border-left: 4px solid var(--success);
+    }
+
+    .profile-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-photo-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        background-color: #f9fafc;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .profile-photo-container {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .profile-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid var(--white);
+        box-shadow: var(--box-shadow);
+    }
+
+    .profile-photo-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: var(--light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--medium);
+        font-size: 4rem;
+        border: 3px solid var(--white);
+        box-shadow: var(--box-shadow);
+    }
+
+    .btn-upload-photo {
+        background-color: var(--white);
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        border-radius: var(--border-radius);
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-upload-photo:hover {
+        background-color: var(--primary);
+        color: var(--white);
+        text-decoration: none;
+    }
+
+    .profile-form {
+        padding: 2rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-input {
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: var(--white);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+    }
+
+    .form-input[readonly] {
+        background-color: #f8fafc;
+        color: var(--medium);
+    }
+
+    .role-display, .tokens-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background-color: #f8fafc;
+        border-radius: var(--border-radius);
+        color: var(--dark);
+    }
+
+    .tokens-display {
+        font-weight: 600;
+    }
+
+    .token-icon {
+        font-size: 1.2rem;
+    }
+
+    .form-error {
+        color: var(--danger);
+        font-size: 0.8rem;
+        min-height: 1rem;
+    }
+
+    .btn-save {
+        margin-top: 2rem;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .btn-save:hover {
+        background-color: var(--secondary);
+        transform: translateY(-2px);
+    }
+
+    .btn-change-password {
+        background-color: var(--white);
+        color: var(--dark);
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-change-password:hover {
+        background-color: #f8fafc;
+        border-color: var(--medium);
+        text-decoration: none;
+    }
+
+    @@media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .profile-photo-section {
+            padding: 1.5rem;
+        }
+
+        .profile-form {
+            padding: 1.5rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .profile-container {
+            padding: 1rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

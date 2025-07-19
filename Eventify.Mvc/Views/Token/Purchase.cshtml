@@ -1,0 +1,97 @@
+@model Eventify.DTOs.Token.TokenPackageDto
+
+@{
+    ViewData["Title"] = "Jeton Satın Al";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="bi bi-coin me-2"></i>Jeton Satın Al
+                    </h2>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Paket Özeti -->
+                    <div class="row mb-5">
+                        <div class="col-md-6">
+                            <div class="text-center p-4 bg-light rounded">
+                                <h3 class="text-primary fw-bold mb-3">@Model.Name</h3>
+                                <div class="display-6 fw-bold text-primary mb-2">
+                                    @Model.TokenAmount.ToString("N0") <i class="bi bi-coin"></i>
+                                </div>
+                                <p class="text-muted">@Model.Description</p>
+                                @if (!string.IsNullOrEmpty(Model.BonusText))
+                                {
+                                    <span class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="bi bi-gift"></i> @Model.BonusText
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center p-4 bg-light rounded">
+                                <h4 class="text-success fw-bold mb-3">Toplam Tutar</h4>
+                                <div class="display-5 fw-bold text-success mb-2">
+                                    ₺@Model.Price.ToString("N2")
+                                </div>
+                                <p class="text-muted">KDV Dahil</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basit Satın Alma -->
+                    <form asp-action="Purchase" method="post">
+                        <input type="hidden" name="PackageId" value="@Model.Id" />
+                        <input type="hidden" name="CardHolderName" value="Test Kullanıcı" />
+                        <input type="hidden" name="CardNumber" value="1234 5678 9012 3456" />
+                        <input type="hidden" name="ExpiryMonth" value="12" />
+                        <input type="hidden" name="ExpiryYear" value="@(DateTime.Now.Year + 2)" />
+                        <input type="hidden" name="Cvv" value="123" />
+                        <input type="hidden" name="PaymentMethod" value="credit_card" />
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Bilgi:</strong> Jeton satın alımı için gerekli bilgiler otomatik olarak doldurulmuştur.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-cart-plus me-2"></i>Jeton Satın Al
+                            </button>
+                            <a href="@Url.Action("Packages", "Token")" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Paketlere Dön
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .card {
+        border-radius: 15px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .btn {
+        border-radius: 10px;
+        font-weight: 600;
+    }
+</style> 

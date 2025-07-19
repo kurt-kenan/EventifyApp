@@ -1,0 +1,36 @@
+@* Reusable Table Partial *@
+@* Kullanım: @await Html.PartialAsync("_TablePartial", new { headers = new[] { "Ad", "Tarih", "Durum", "Aksiyonlar" }, rows = new[] { new[] { "Etkinlik 1", "2025-07-15", "Aktif", "<button class='btn-action btn-primary' data-bs-toggle='tooltip' data-bs-original-title='Düzenle'><i class='bi bi-pencil'></i></button>" } } }) *@
+@{
+    var headers = ViewData["headers"] as string[] ?? new string[0];
+    var rows = ViewData["rows"] as string[][] ?? new string[0][];
+}
+<div class="table-responsive animate-fade-in">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="bg-gradient-primary text-white">
+            <tr>
+                @foreach (var h in headers) {
+                    <th class="fw-semibold">@h</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in rows) {
+                <tr class="table-row-animate">
+                    @foreach (var cell in row) {
+                        <td>@Html.Raw(cell)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+// Tooltip desteği
+const table = document.currentScript?.previousElementSibling;
+if(table){
+  const tooltipTriggerList = table.querySelectorAll('[data-bs-toggle="tooltip"]');
+  tooltipTriggerList.forEach(function(el){
+    new bootstrap.Tooltip(el);
+  });
+}
+</script> 

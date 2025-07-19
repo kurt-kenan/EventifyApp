@@ -1,0 +1,40 @@
+@* Reusable Confirmation Modal Partial *@
+@* Kullanım: @await Html.PartialAsync("_ConfirmModalPartial", new { modalId = "deleteModal", title = "Silmek istediğinize emin misiniz?", description = "Bu işlem geri alınamaz.", confirmText = "Evet, Sil", cancelText = "Vazgeç", confirmClass = "btn-danger" }) *@
+@{
+    var modalId = (string)ViewData["modalId"] ?? "confirmModal";
+    var title = (string)ViewData["title"] ?? "Onayla";
+    var description = (string)ViewData["description"] ?? "Bu işlemi onaylıyor musunuz?";
+    var confirmText = (string)ViewData["confirmText"] ?? "Onayla";
+    var cancelText = (string)ViewData["cancelText"] ?? "İptal";
+    var confirmClass = (string)ViewData["confirmClass"] ?? "btn-danger";
+}
+<div class="modal fade confirm-modal" id="@modalId" tabindex="-1" aria-labelledby="@modalId-Label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content animate-fade-in">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-semibold" id="@modalId-Label"><i class="bi bi-question-circle me-2 text-warning"></i>@title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="mb-2">@description</div>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-between">
+        <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">@cancelText</button>
+        <button type="button" class="btn @confirmClass rounded-pill" id="@modalId-ConfirmBtn">@confirmText</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// Mikro etkileşim: Onay butonuna tıklandığında loading animasyonu
+const modal = document.getElementById('@modalId');
+if(modal){
+  modal.addEventListener('shown.bs.modal', function(){
+    const btn = modal.querySelector('#@modalId-ConfirmBtn');
+    btn.onclick = function(){
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + btn.textContent;
+      btn.setAttribute('disabled','disabled');
+    };
+  });
+}
+</script> 

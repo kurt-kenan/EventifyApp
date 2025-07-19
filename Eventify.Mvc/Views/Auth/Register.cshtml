@@ -1,0 +1,527 @@
+﻿@model RegisterViewModel
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="bi bi-calendar-heart"></i>
+                <span>Eventify</span>
+            </div>
+            <h1 class="auth-title">Yeni Hesap Oluştur</h1>
+            <p class="auth-subtitle">Etkinlik dünyasına katılmak için kayıt olun</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="auth-alert">
+                <i class="bi bi-exclamation-circle"></i>
+                <div class="alert-content">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            </div>
+        }
+
+        <form asp-action="Register" method="post" class="auth-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">İsim</label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </span>
+                        <input asp-for="Name" class="form-input" placeholder="Adınız ve soyadınız" />
+                    </div>
+                    <span asp-validation-for="Name" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Kullanıcı Adı</label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input asp-for="Username" class="form-input" placeholder="kullaniciadi" />
+                    </div>
+                    <span asp-validation-for="Username" class="form-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input asp-for="Email" class="form-input" placeholder="ornek@email.com" />
+                </div>
+                <span asp-validation-for="Email" class="form-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Şifre</label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
+                        <button type="button" class="password-toggle">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="form-error"></span>
+                    <div class="password-strength">
+                        <div class="strength-bar"></div>
+                        <div class="strength-text">Şifre gücü: zayıf</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Şifre Tekrar</label>
+                    <div class="input-group">
+                        <span class="input-icon">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input asp-for="ConfirmPassword" type="password" class="form-input" placeholder="••••••••" />
+                        <button type="button" class="password-toggle">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="form-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Doğum Tarihi</label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <i class="bi bi-calendar"></i>
+                    </span>
+                    <input asp-for="BirthDate" type="date" class="form-input" />
+                </div>
+                <span asp-validation-for="BirthDate" class="form-error"></span>
+            </div>
+
+            <div class="form-agreement">
+                <label class="agreement-check">
+                    <input type="checkbox" required />
+                    <span>Kullanım koşullarını ve gizlilik politikasını okudum ve kabul ediyorum</span>
+                </label>
+            </div>
+
+            <button type="submit" class="auth-button">
+                <i class="bi bi-person-plus"></i> Kayıt Ol
+            </button>
+
+            <div class="auth-footer">
+                <span>Zaten hesabınız var mı?</span>
+                <a href="/Auth/Login" class="auth-link">Giriş Yap</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="auth-illustration">
+        <img src="https://cdn-icons-png.flaticon.com/512/2996/2996861.png" alt="Register Illustration">
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --accent: #f72585;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #ef233c;
+        --dark: #2b2d42;
+        --medium: #8d99ae;
+        --light: #edf2f4;
+        --white: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8fafc;
+        color: var(--dark);
+        line-height: 1.6;
+    }
+
+    .auth-container {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 3rem;
+        width: 100%;
+        max-width: 600px;
+        z-index: 1;
+    }
+
+    .auth-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .auth-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+        .auth-logo i {
+            font-size: 2rem;
+        }
+
+    .auth-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .auth-subtitle {
+        color: var(--medium);
+        font-size: 0.95rem;
+    }
+
+    .auth-alert {
+        background-color: rgba(239, 35, 60, 0.1);
+        color: var(--danger);
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--danger);
+    }
+
+        .auth-alert i {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+    .alert-content {
+        flex: 1;
+    }
+
+        .alert-content div {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        color: var(--medium);
+        font-size: 1.1rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.9rem 1rem 0.9rem 2.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background-color: var(--white);
+    }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+    input[type="date"].form-input {
+        padding-right: 1rem;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--medium);
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .form-error {
+        color: var(--danger);
+        font-size: 0.8rem;
+        min-height: 1rem;
+    }
+
+    .password-strength {
+        margin-top: 0.5rem;
+    }
+
+    .strength-bar {
+        height: 4px;
+        background-color: #e2e8f0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 0.25rem;
+    }
+
+        .strength-bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: 20%;
+            background-color: var(--danger);
+            transition: var(--transition);
+        }
+
+    .strength-text {
+        font-size: 0.75rem;
+        color: var(--medium);
+    }
+
+    .form-agreement {
+        margin: 0.5rem 0;
+    }
+
+    .agreement-check {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--medium);
+        cursor: pointer;
+        line-height: 1.4;
+    }
+
+        .agreement-check input {
+            margin-top: 3px;
+            min-width: 1rem;
+            height: 1rem;
+            accent-color: var(--primary);
+        }
+
+    .auth-button {
+        padding: 1rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+        .auth-button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--medium);
+        font-size: 0.9rem;
+    }
+
+    .auth-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 0.5rem;
+        transition: var(--transition);
+    }
+
+        .auth-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+    .auth-illustration {
+        display: none;
+    }
+
+    @@media (min-width: 992px) {
+        .auth-container
+
+    {
+        gap: 4rem;
+        padding: 4rem;
+    }
+
+    .auth-illustration {
+        display: block;
+        max-width: 500px;
+    }
+
+        .auth-illustration img {
+            width: 100%;
+            height: auto;
+            animation: float 6s ease-in-out infinite;
+        }
+
+    }
+
+    @@media (max-width: 768px) {
+        .form-row
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .auth-card
+
+    {
+        padding: 2rem 1.5rem;
+    }
+
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Şifre göster/gizle
+        const passwordToggles = document.querySelectorAll('.password-toggle');
+        passwordToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+
+        // Şifre güç kontrolü
+        const passwordInput = document.querySelector('input[type="password"][name="Password"]');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const strengthBar = document.querySelector('.strength-bar');
+                const strengthText = document.querySelector('.strength-text');
+                const password = this.value;
+                let strength = 0;
+
+                // Uzunluk kontrolü
+                if (password.length > 7) strength += 1;
+                if (password.length > 11) strength += 1;
+
+                // Karakter çeşitliliği
+                if (password.match(/[a-z]/)) strength += 1;
+                if (password.match(/[A-Z]/)) strength += 1;
+                if (password.match(/[0-9]/)) strength += 1;
+                if (password.match(/[^a-zA-Z0-9]/)) strength += 1;
+
+                // Görsel güncelleme
+                const width = Math.min(100, strength * 20);
+                strengthBar.style.width = width + '%';
+
+                if (strength < 3) {
+                    strengthBar.style.backgroundColor = 'var(--danger)';
+                    strengthText.textContent = 'Şifre gücü: zayıf';
+                } else if (strength < 5) {
+                    strengthBar.style.backgroundColor = 'var(--warning)';
+                    strengthText.textContent = 'Şifre gücü: orta';
+                } else {
+                    strengthBar.style.backgroundColor = 'var(--success)';
+                    strengthText.textContent = 'Şifre gücü: güçlü';
+                }
+            });
+        }
+
+        // Doğum tarihi için maksimum değer ayarla (18 yaş sınırı)
+        const birthDateInput = document.querySelector('input[type="date"][name="BirthDate"]');
+        if (birthDateInput) {
+            const today = new Date();
+            const maxDate = new Date();
+            maxDate.setFullYear(today.getFullYear() - 18);
+            birthDateInput.max = maxDate.toISOString().split('T')[0];
+        }
+    });
+</script>

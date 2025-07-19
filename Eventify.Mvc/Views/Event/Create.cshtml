@@ -1,0 +1,196 @@
+@model Eventify.Mvc.Controllers.EventCreateViewModel
+@{
+    ViewData["Title"] = "Etkinlik Oluştur";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Yeni Etkinlik Oluştur
+                    </h2>
+                    @{
+                        var usageStats = ViewBag.UsageStats as System.Text.Json.JsonElement?;
+                    }
+                    @if (usageStats.HasValue)
+                    {
+                        try
+                        {
+                            var remainingEvents = usageStats.Value.GetProperty("remainingEvents").GetInt32();
+                            var eventsCreatedThisMonth = usageStats.Value.GetProperty("eventsCreatedThisMonth").GetInt32();
+                            var maxEventsPerMonth = usageStats.Value.GetProperty("maxEventsPerMonth").GetInt32();
+                            var remainingClass = remainingEvents <= 2 ? "text-warning" : "text-dark";
+                            
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        Kalan Etkinlik Hakkı: <strong class="@remainingClass">@remainingEvents</strong> / @maxEventsPerMonth
+                                    </span>
+                                    @if (remainingEvents <= 2)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                            Limit Dolmak Üzere!
+                                        </span>
+                                    }
+                                </div>
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar @(remainingEvents <= 2 ? "bg-warning" : "bg-light")" 
+                                         role="progressbar" 
+                                         style="width: @(Math.Min((eventsCreatedThisMonth * 100 / maxEventsPerMonth), 100))%" 
+                                         aria-valuenow="@(eventsCreatedThisMonth * 100 / maxEventsPerMonth)" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        catch
+                        {
+                            <div class="mt-3">
+                                <div class="d-flex justify-content-center">
+                                    <span class="badge bg-info text-white">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Abonelik bilgileri yükleniyor...
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-center">
+                                <span class="badge bg-info text-white">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Etkinlik oluşturma hazır
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-body p-5">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+                        </div>
+                    }
+                    
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label asp-for="Title" class="form-label fw-bold">
+                                    <i class="bi bi-type-h1 me-2"></i>Etkinlik Başlığı
+                                </label>
+                                <input asp-for="Title" class="form-control form-control-lg" placeholder="Etkinlik başlığını girin" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label asp-for="Description" class="form-label fw-bold">
+                                    <i class="bi bi-text-paragraph me-2"></i>Açıklama
+                                </label>
+                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Etkinlik hakkında detaylı bilgi verin"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="Location" class="form-label fw-bold">
+                                    <i class="bi bi-geo-alt me-2"></i>Konum
+                                </label>
+                                <input asp-for="Location" class="form-control form-control-lg" placeholder="Etkinlik konumu" />
+                                <span asp-validation-for="Location" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="MaxParticipants" class="form-label fw-bold">
+                                    <i class="bi bi-people me-2"></i>Maksimum Katılımcı
+                                </label>
+                                <input asp-for="MaxParticipants" class="form-control form-control-lg" placeholder="Katılımcı sayısı" />
+                                <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="StartDate" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-event me-2"></i>Başlangıç Tarihi
+                                </label>
+                                <input asp-for="StartDate" type="datetime-local" class="form-control form-control-lg" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="EndDate" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-x me-2"></i>Bitiş Tarihi
+                                </label>
+                                <input asp-for="EndDate" type="datetime-local" class="form-control form-control-lg" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-image me-2"></i>Etkinlik Fotoğrafı <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input asp-for="EventPhoto" type="file" class="form-control" accept="image/*" required />
+                                    <span class="input-group-text">
+                                        <i class="bi bi-upload"></i>
+                                    </span>
+                                </div>
+                                <small class="text-muted">PNG, JPG veya JPEG formatında, maksimum 5MB</small>
+                                <span asp-validation-for="EventPhoto" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-tags me-2"></i>Etkinlik Hobileri <span class="text-danger">*</span>
+                                </label>
+                                <div class="row">
+                                    @foreach (var hobby in Model.AllHobbies)
+                                    {
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" name="SelectedHobbyIds" 
+                                                       value="@hobby.Id" id="hobby_@hobby.Id" 
+                                                       @(Model.SelectedHobbyIds.Contains(hobby.Id) ? "checked" : "") />
+                                                <label class="form-check-label fw-medium" for="hobby_@hobby.Id">
+                                                    @hobby.Name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <small class="text-muted">En az bir hobi seçmelisiniz</small>
+                                <span asp-validation-for="SelectedHobbyIds" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary btn-lg me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>İptal
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Etkinlik Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

@@ -1,0 +1,389 @@
+﻿@model LoginViewModel
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <i class="bi bi-calendar-heart"></i>
+                <span>Eventify</span>
+            </div>
+            <h1 class="auth-title">Hesabınıza Giriş Yapın</h1>
+            <p class="auth-subtitle">Etkinlik dünyasına katılmak için giriş yapın</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="auth-alert">
+                <i class="bi bi-exclamation-circle"></i>
+                <div class="alert-content">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            </div>
+        }
+
+        <form asp-action="Login" method="post" class="auth-form">
+            <div class="form-group">
+                <label class="form-label">Kullanıcı Adı veya Email</label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input asp-for="UsernameOrEmail" class="form-input" placeholder="kullanici@ornek.com" />
+                </div>
+                <span asp-validation-for="UsernameOrEmail" class="form-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Şifre</label>
+                <div class="input-group">
+                    <span class="input-icon">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input asp-for="Password" type="password" class="form-input" placeholder="••••••••" />
+                    <button type="button" class="password-toggle">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="form-error"></span>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="rememberMe" />
+                    <span>Beni Hatırla</span>
+                </label>
+                <a href="/Auth/ForgotPassword" class="forgot-password">Şifremi Unuttum</a>
+            </div>
+
+            <button type="submit" class="auth-button">
+                <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+            </button>
+
+            <div class="auth-footer">
+                <span>Hesabınız yok mu?</span>
+                <a href="/Auth/Register" class="auth-link">Kayıt Ol</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="auth-illustration">
+        <img src="https://cdn-icons-png.flaticon.com/512/2996/2996837.png" alt="Login Illustration">
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --secondary: #3f37c9;
+        --accent: #f72585;
+        --success: #4cc9f0;
+        --warning: #f8961e;
+        --danger: #ef233c;
+        --dark: #2b2d42;
+        --medium: #8d99ae;
+        --light: #edf2f4;
+        --white: #ffffff;
+        --border-radius: 12px;
+        --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8fafc;
+        color: var(--dark);
+        line-height: 1.6;
+    }
+
+    .auth-container {
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 3rem;
+        width: 100%;
+        max-width: 480px;
+        z-index: 1;
+    }
+
+    .auth-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .auth-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+        .auth-logo i {
+            font-size: 2rem;
+        }
+
+    .auth-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .auth-subtitle {
+        color: var(--medium);
+        font-size: 0.95rem;
+    }
+
+    .auth-alert {
+        background-color: rgba(239, 35, 60, 0.1);
+        color: var(--danger);
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--danger);
+    }
+
+        .auth-alert i {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+    .alert-content {
+        flex: 1;
+    }
+
+        .alert-content div {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        color: var(--medium);
+        font-size: 1.1rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.9rem 1rem 0.9rem 2.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: var(--border-radius);
+        font-family: inherit;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        background-color: var(--white);
+    }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+    .password-toggle {
+        position: absolute;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--medium);
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .form-error {
+        color: var(--danger);
+        font-size: 0.8rem;
+        min-height: 1rem;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--medium);
+        cursor: pointer;
+    }
+
+        .remember-me input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--primary);
+        }
+
+    .forgot-password {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+        .forgot-password:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+    .auth-button {
+        padding: 1rem;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+        .auth-button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--medium);
+        font-size: 0.9rem;
+    }
+
+    .auth-link {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 0.5rem;
+        transition: var(--transition);
+    }
+
+        .auth-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+    .auth-illustration {
+        display: none;
+    }
+
+    @@media (min-width: 992px) {
+        .auth-container {
+            gap: 4rem;
+            padding: 4rem;
+        }
+
+        .auth-illustration {
+            display: block;
+            max-width: 500px;
+        }
+
+            .auth-illustration img {
+                width: 100%;
+                height: auto;
+                animation: float 6s ease-in-out infinite;
+            }
+    }
+
+    @@keyframes float {
+        0%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .auth-card {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Şifre göster/gizle
+        const passwordToggle = document.querySelector('.password-toggle');
+        if (passwordToggle) {
+            passwordToggle.addEventListener('click', function() {
+                const passwordInput = document.querySelector('input[type="password"]');
+                const icon = this.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,39 @@
+@model List<Eventify.Mvc.Models.EventSummaryViewModel>
+
+@{
+    ViewData["Title"] = "Katıldıklarım";
+}
+
+<h2>Katıldığım Etkinlikler</h2>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Lokasyon</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var ev in Model)
+        {
+            <tr>
+                <td>@ev.Title</td>
+                <td>@ev.Location</td>
+                <td>@ev.StartDate.ToString("g")</td>
+                <td>@ev.EndDate.ToString("g")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>Henüz bir etkinliğe katılmadınız.</div>
+} 

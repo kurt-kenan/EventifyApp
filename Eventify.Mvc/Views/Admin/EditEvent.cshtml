@@ -1,0 +1,103 @@
+@model Eventify.Mvc.Models.AdminEventViewModel
+@{
+    ViewData["Title"] = "Etkinlik Düzenle";
+}
+<h2>Etkinlik Düzenle</h2>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["DebugHobbies"] != null)
+{
+    <div class="alert alert-info">DEBUG: Seçili Hobiler: @TempData["DebugHobbies"]</div>
+}
+@if (TempData["DebugModelState"] != null)
+{
+    <div class="alert alert-info">DEBUG: ModelState: @TempData["DebugModelState"]</div>
+}
+@if (TempData["DebugModelId"] != null)
+{
+    <div class="alert alert-info">DEBUG: Model ID: @TempData["DebugModelId"]</div>
+}
+@if (Model == null)
+{
+    <div class="alert alert-danger">Etkinlik bulunamadı veya yüklenemedi.</div>
+    <a asp-action="Events" class="btn btn-secondary">Geri Dön</a>
+}
+else
+{
+    <form asp-action="EditEvent" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+        @if (!string.IsNullOrEmpty(Model.PhotoPath))
+        {
+            <div class="mb-3">
+                <label class="form-label">Mevcut Fotoğraf</label><br />
+                <img src="@Model.PhotoPath" alt="Etkinlik Fotoğrafı" style="max-width: 320px; max-height: 220px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+            </div>
+        }
+    <div class="mb-3">
+        <label class="form-label">Yeni Fotoğraf Yükle (değiştirmek için)</label>
+        <input asp-for="EventPhoto" type="file" class="form-control" accept="image/*" />
+        <span asp-validation-for="EventPhoto" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Location" class="form-label"></label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="MaxParticipants" class="form-label"></label>
+        <input asp-for="MaxParticipants" class="form-control" />
+        <span asp-validation-for="MaxParticipants" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Etkinlik Hobileri (En az birini seçin):</label>
+        <div class="row">
+            @if (Model?.AllHobbies != null)
+            {
+                @foreach (var hobby in Model.AllHobbies)
+                {
+                    <div class="col-md-4 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="SelectedHobbyIds" value="@hobby.Id" id="hobby_@hobby.Id" @(Model.SelectedHobbyIds?.Contains(hobby.Id) == true ? "checked" : "") />
+                            <label class="form-check-label" for="hobby_@hobby.Id">@hobby.Name</label>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <p class="text-muted">Hobiler yükleniyor...</p>
+                </div>
+            }
+        </div>
+        <span asp-validation-for="SelectedHobbyIds" class="text-danger"></span>
+    </div>
+        <button type="submit" class="btn btn-success">Kaydet</button>
+        <a asp-action="Events" class="btn btn-secondary">Geri</a>
+    </form>
+}
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 
